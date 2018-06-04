@@ -10,18 +10,21 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
     protected fun AndroidPublisher.Edits.updateTracks(
             editId: String,
             inputFolder: File,
-            versions: List<Long>
+            versions: List<Long>,
+            trackName: String = extension.track,
+            releaseStatus: String = extension.releaseStatus,
+            publishFraction: Double = extension.userFraction
     ) {
         val track = tracks()
                 .list(variant.applicationId, editId)
                 .execute().tracks
-                ?.firstOrNull { it.track == extension.track } ?: Track()
+                ?.firstOrNull { it.track == trackName } ?: Track()
 
         val releaseTexts = if (inputFolder.exists()) {
             inputFolder.listFiles(LocaleFileFilter).mapNotNull { locale ->
                 val fileName = ListingDetail.WHATS_NEW.fileName
                 val file = run {
-                    File(locale, "$fileName-${extension.track}").orNull()
+                    File(locale, "$fileName-$trackName").orNull()
                             ?: File(locale, fileName).orNull()
                 } ?: return@mapNotNull null
 
@@ -36,9 +39,9 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
         }
         val trackRelease = TrackRelease().apply {
             releaseNotes = releaseTexts
-            status = extension.releaseStatus
-            userFraction = if (extension._releaseStatus == ReleaseStatus.IN_PROGRESS) {
-                extension.userFraction
+            status = releaseStatus
+            userFraction = if (releaseStatus == ReleaseStatus.IN_PROGRESS.publishedName) {
+                publishFraction
             } else {
                 null
             }
@@ -48,7 +51,7 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
         track.releases = listOf(trackRelease)
 
         tracks()
-                .update(variant.applicationId, editId, extension.track, track)
+                .update(variant.applicationId, editId, trackName, track)
                 .execute()
     }
 }

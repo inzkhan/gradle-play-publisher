@@ -3,6 +3,7 @@ package com.github.triplet.gradle.play
 import com.github.triplet.gradle.play.internal.AccountConfig
 import com.github.triplet.gradle.play.internal.ReleaseStatus
 import com.github.triplet.gradle.play.internal.TrackType
+import org.gradle.api.Action
 
 open class PlayPublisherExtension : AccountConfig by PlayAccountConfigExtension() {
     internal var _track = TrackType.INTERNAL
@@ -60,4 +61,17 @@ open class PlayPublisherExtension : AccountConfig by PlayAccountConfigExtension(
                         ReleaseStatus.values().joinToString { "'${it.publishedName}'" }
             }
         }
+
+    /**
+     * Specify any default modifiers for adjusting releases after publication. (see [ModifyTrackTask])
+     *
+     * Note: Function is required for the Gradle DSL to work
+     */
+    internal var releaseModifiers: PlayReleaseModifiers? = null
+
+    open fun releaseModifiers(action: Action<PlayReleaseModifiers>) {
+        releaseModifiers = PlayReleaseModifiers().apply {
+            action.execute(this)
+        }
+    }
 }

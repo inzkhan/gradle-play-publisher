@@ -43,6 +43,10 @@ class PlayPublisherPlugin : Plugin<Project> {
                 "publishListingAll",
                 "Uploads all Play Store metadata for every variant."
         )
+        val modifyAllReleaseTask = project.newTask<Task>(
+                "modifyAll",
+                "Allows updating the track, status, and release notes for every variant."
+        )
 
         project.initPlayAccountConfigs(android)
         android.applicationVariants.whenObjectAdded { variant ->
@@ -117,6 +121,18 @@ class PlayPublisherPlugin : Plugin<Project> {
                     dependsOn(publishListingTask)
                     publishAllTask.dependsOn(this)
                 }
+
+                project.newTask<ModifyTrackTask>(
+                        "modify$variantName",
+                        "Modifies a release track and/or release notes for $variantName."
+                ) {
+                    init()
+                    inputFolder = playResourcesTask.outputFolder
+
+                    modifyAllReleaseTask.dependsOn(this)
+                }
+
+
             } else {
                 project.logger.error(
                         "Signing not ready. Be sure to specify a signingConfig for $variantName?")

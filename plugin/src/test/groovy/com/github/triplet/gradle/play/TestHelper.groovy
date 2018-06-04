@@ -6,6 +6,7 @@ import org.gradle.testfixtures.ProjectBuilder
 class TestHelper {
 
     static final FIXTURE_WORKING_DIR = new File('src/test/fixtures/android_app')
+    static final MODIFY_WORKING_DIR = new File('src/test/fixtures/android_modify')
 
     static Project fixtureProject() {
         return ProjectBuilder.builder().withProjectDir(FIXTURE_WORKING_DIR).build()
