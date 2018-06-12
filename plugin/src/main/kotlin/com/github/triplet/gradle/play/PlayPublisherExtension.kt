@@ -96,4 +96,7 @@ open class PlayPublisherExtension : AccountConfig by PlayAccountConfigExtension(
                         ReleaseStatus.values().joinToString { "'${it.publishedName}'" }
             }
         }
+
+    // TODO https://issuetracker.google.com/issues/110059315
+    var appId: String? = null
 }

@@ -60,7 +60,7 @@ open class PublishApkTask : PlayPublishPackageBase() {
 
     private fun AndroidPublisher.Edits.publishApk(editId: String, content: FileContent): Apk? {
         val apk = try {
-            apks().upload(variant.applicationId, editId, content)
+            apks().upload(applicationId, editId, content)
                     .trackUploadProgress(progressLogger, "APK")
                     .execute()
         } catch (e: GoogleJsonResponseException) {

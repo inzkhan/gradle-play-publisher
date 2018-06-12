@@ -88,7 +88,7 @@ open class PublishListingTask : PlayPublishTaskBase() {
                     ?.readProcessed(AppDetail.CONTACT_WEBSITE.maxLength, errorOnSizeLimit)
         }
 
-        details().update(variant.applicationId, editId, details).execute()
+        details().update(applicationId, editId, details).execute()
     }
 
     private fun AndroidPublisher.Edits.updateListing(
@@ -113,7 +113,7 @@ open class PublishListingTask : PlayPublishTaskBase() {
         }
 
         try {
-            listings().update(variant.applicationId, editId, locale, listing).execute()
+            listings().update(applicationId, editId, locale, listing).execute()
         } catch (e: GoogleJsonResponseException) {
             if (e.details.errors.any { it.reason == "unsupportedListingLanguage" }) {
                 // Rethrow for clarity
@@ -146,10 +146,10 @@ open class PublishListingTask : PlayPublishTaskBase() {
 
         progressLogger.progress(
                 "Uploading $locale listing graphics for type '${type.fileName}'")
-        images().deleteall(variant.applicationId, editId, locale, typeName).execute()
+        images().deleteall(applicationId, editId, locale, typeName).execute()
         for (file in files) {
             images()
-                    .upload(variant.applicationId, editId, locale, typeName, file)
+                    .upload(applicationId, editId, locale, typeName, file)
                     .execute()
         }
     }

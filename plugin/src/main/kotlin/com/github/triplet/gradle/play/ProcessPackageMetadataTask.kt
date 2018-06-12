@@ -22,7 +22,7 @@ open class ProcessPackageMetadataTask : PlayPublishTaskBase() {
 
     private fun processVersionCodes() = read { editId ->
         progressLogger.progress("Downloading active version codes")
-        val maxVersionCode = tracks().list(variant.applicationId, editId).execute().tracks
+        val maxVersionCode = tracks().list(applicationId, editId).execute().tracks
                 ?.map { it.releases ?: emptyList() }?.flatten()
                 ?.map { it.versionCodes ?: emptyList() }?.flatten()
                 ?.max() ?: 1

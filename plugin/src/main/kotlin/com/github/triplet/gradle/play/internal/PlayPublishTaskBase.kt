@@ -19,6 +19,8 @@ abstract class PlayPublishTaskBase : DefaultTask() {
     @get:Nested lateinit var accountConfig: AccountConfig
 
     @get:Internal
+    protected val applicationId: String by lazy { extension.appId ?: variant.applicationId }
+    @get:Internal
     protected val progressLogger: ProgressLogger = services[ProgressLoggerFactory::class.java]
             .newOperation(javaClass)
 
@@ -55,7 +57,7 @@ abstract class PlayPublishTaskBase : DefaultTask() {
 
     protected fun read(block: AndroidPublisher.Edits.(editId: String) -> Unit) {
         val edits = publisher.edits()
-        val request = edits.insert(variant.applicationId, null)
+        val request = edits.insert(applicationId, null)
 
         val id = try {
             request.execute().id
@@ -63,7 +65,7 @@ abstract class PlayPublishTaskBase : DefaultTask() {
             // Rethrow for clarity
             if (e.details.errors.any { it.reason == "applicationNotFound" }) {
                 throw IllegalArgumentException(
-                        "No application found for the package name ${variant.applicationId}. " +
+                        "No application found for the package name $applicationId. " +
                                 "The first version of your app must be uploaded via the " +
                                 "Play Store console.", e)
             } else if (e.statusCode == 401) {
@@ -80,6 +82,6 @@ abstract class PlayPublishTaskBase : DefaultTask() {
             crossinline block: AndroidPublisher.Edits.(editId: String) -> Unit
     ) = read {
         block(it)
-        commit(variant.applicationId, it).execute()
+        commit(applicationId, it).execute()
     }
 }

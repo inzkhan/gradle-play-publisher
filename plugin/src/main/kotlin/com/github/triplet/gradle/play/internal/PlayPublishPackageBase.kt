@@ -18,7 +18,7 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
 
     protected fun AndroidPublisher.Edits.updateTracks(editId: String, versions: List<Long>) {
         val track = tracks()
-                .list(variant.applicationId, editId)
+                .list(applicationId, editId)
                 .execute().tracks
                 ?.firstOrNull { it.track == extension.track } ?: Track()
 
@@ -47,7 +47,7 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
         track.releases = listOf(trackRelease)
 
         tracks()
-                .update(variant.applicationId, editId, extension.track, track)
+                .update(applicationId, editId, extension.track, track)
                 .execute()
     }
 
@@ -81,7 +81,7 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
             extension._track.superiors.map { it.publishedName }.forEach { channel ->
                 try {
                     val track = tracks().get(
-                            variant.applicationId,
+                            applicationId,
                             editId,
                             channel
                     ).execute().apply {
@@ -90,7 +90,7 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
                                     it.versionCodes.filter { it > versionCode.toLong() }
                         }
                     }
-                    tracks().update(variant.applicationId, editId, channel, track).execute()
+                    tracks().update(applicationId, editId, channel, track).execute()
                 } catch (e: GoogleJsonResponseException) {
                     // Just skip if there is no version in track
                     if (e.details.code != 404) throw e
@@ -101,7 +101,7 @@ abstract class PlayPublishPackageBase : PlayPublishTaskBase() {
         if (variant.mappingFile?.exists() == true) {
             val mapping = FileContent(MIME_TYPE_STREAM, variant.mappingFile)
             deobfuscationfiles()
-                    .upload(variant.applicationId, editId, versionCode, "proguard", mapping)
+                    .upload(applicationId, editId, versionCode, "proguard", mapping)
                     .trackUploadProgress(progressLogger, "mapping file")
                     .execute()
         }

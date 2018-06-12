@@ -41,7 +41,7 @@ open class BootstrapTask : PlayPublishTaskBase() {
         fun String.write(detail: AppDetail) = write(srcDir, detail.fileName)
 
         progressLogger.progress("Downloading app details")
-        val details = details().get(variant.applicationId, editId).execute()
+        val details = details().get(applicationId, editId).execute()
 
         details.contactEmail.nullOrFull()?.write(AppDetail.CONTACT_EMAIL)
         details.contactPhone.nullOrFull()?.write(AppDetail.CONTACT_PHONE)
@@ -52,7 +52,7 @@ open class BootstrapTask : PlayPublishTaskBase() {
     private fun AndroidPublisher.Edits.bootstrapListing(editId: String) {
         progressLogger.progress("Fetching listings")
         val listings = listings()
-                .list(variant.applicationId, editId)
+                .list(applicationId, editId)
                 .execute()
                 .listings ?: return
 
@@ -75,7 +75,7 @@ open class BootstrapTask : PlayPublishTaskBase() {
                             "Downloading ${listing.language} listing graphics for type " +
                                     "'${type.fileName}'")
                     val images = images()
-                            .list(variant.applicationId, editId, listing.language, type.fileName)
+                            .list(applicationId, editId, listing.language, type.fileName)
                             .execute()
                             .images ?: continue
                     val imageDir = File(rootDir, type.fileName)
@@ -98,7 +98,7 @@ open class BootstrapTask : PlayPublishTaskBase() {
 
     private fun AndroidPublisher.Edits.bootstrapReleaseNotes(editId: String) {
         progressLogger.progress("Downloading release notes")
-        tracks().list(variant.applicationId, editId).execute().tracks?.forEach { track ->
+        tracks().list(applicationId, editId).execute().tracks?.forEach { track ->
             track.releases.maxBy {
                 it.versionCodes?.max() ?: Long.MIN_VALUE
             }?.releaseNotes?.forEach {

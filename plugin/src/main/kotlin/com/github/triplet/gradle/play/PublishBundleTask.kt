@@ -56,7 +56,7 @@ open class PublishBundleTask : PlayPublishPackageBase() {
             content: FileContent
     ): Bundle? {
         val bundle = try {
-            bundles().upload(variant.applicationId, editId, content)
+            bundles().upload(applicationId, editId, content)
                     .trackUploadProgress(progressLogger, "App Bundle")
                     .execute()
         } catch (e: GoogleJsonResponseException) {
